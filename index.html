@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>rapi_doc by elc</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>rapi_doc</h1>
+        <p>Document Generator for Rails RESTful APIs</p>
+
+        <p class="view"><a href="https://github.com/elc/rapi_doc">View the Project on GitHub <small>elc/rapi_doc</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/elc/rapi_doc/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/elc/rapi_doc/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/elc/rapi_doc">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Rails API Doc Generator</h1>
+
+<p>RESTTful API documentation generator for Rails. It supports Rails 2.1 and greater. It generates a set of HTML views in the public directory. Parses the desired controllers and generates appropriate views.</p>
+
+<p>Currently does not read routes.rb and requires manual entry of routes</p>
+
+<h1>Installation</h1>
+
+<p><code>gem install rapi_doc</code></p>
+
+<h1>Usage</h1>
+
+<p>Run <code>rake rapi_doc:setup</code> to generate default Haml template files along with default styles.
+These files are in <code>&lt;application folder&gt;/config/rapi_doc</code> folder. </p>
+
+<p>Then invoke the generation by calling:</p>
+
+<p><code>rake rapi_doc:generate</code></p>
+
+<p>It will analyze <code>rake routes</code> output and find the controller files in app/controllers directory that may have the annotation.
+It will confirm from the user whether he/she wants the plugin to look for annotations in each of these files.
+For files confirmed by the user, it will parse the annotations and generate the HTML output using the template files and styles
+in the <code>config/rapi_doc</code> folder.</p>
+
+<p><code>rake rapi_doc:clean</code>
+will remove the documentation thus generated.</p>
+
+<p><code>rake rapi_doc:distclean</code>
+will remove the documentation and also the Haml template files and styles created by the <code>rake rapi_doc:setup</code></p>
+
+<h1>Markup Reference</h1>
+
+<p>Controller methods and controllers themselves are documented by annotating them with "method markers" and
+"resource markers" enclosed in "apidoc" comments, similar to that in RDoc.</p>
+
+<p># =begin apidoc
+  ... method markers
+  # =end</p>
+
+<h2>A] Method markers</h2>
+
+<p>Method markers are specified like this:</p>
+
+<pre><code># &lt;&lt;method-marker-name&gt;:: &lt;method-marker-value&gt;
+</code></pre>
+
+<p>All method markers are optional.</p>
+
+<pre><code># method: HTTP request type such as GET or POST
+# access: access restrictions such as FREE, RESTRICTED for paid subscribers, etc
+# return: list of return data-formats like [JSON|XML] and what the return data means
+# param: name and type of the parameter expected
+# output: output format like JSON, XML. It is recommended that it should include an example of such data.
+#         Each output marker must end with ::output-end:: on a separate line.
+# request: a request generating code example
+# response: a response processing code example
+</code></pre>
+
+<p>You can define your own custom method markers as well.
+They will be available as the instance variables against which the _resource_method.html.erb template
+will be evaluated.</p>
+
+<p>Any other information that needs to be shown in the view can be specified in the apidoc comments as well.
+It will be shown under the "Description" section for the method in the view.</p>
+
+<h2>B] Resource markers</h2>
+
+<p>A resource, which is normally a controller object, can also be annotated with apidoc comments. </p>
+
+<p>Method markers are specified the same way as the method markers:</p>
+
+<pre><code># &lt;&lt;method-marker-name&gt;:: &lt;method-marker-value&gt;
+# 
+# xml: xml representation of the resource
+# json: json representation
+</code></pre>
+
+<p>Just like in method marker, any other information that needs to be shown in the view can be specified in the apidoc comments as well.
+It will be shown under the "Description" section for the method in the view.</p>
+
+<h2>C] Documentation Example</h2>
+
+<pre><code># =begin apidoc
+# url:: /books
+# method:: GET
+# access:: FREE
+# return:: [JSON|XML] - list of book objects
+# param:: page:int - the page, default is 1
+# param:: per_page:int - max items per page, default is 10
+#
+# output:: json
+# [
+#   { "created_at":"2011-12-05T09:46:11Z",
+#     "description":"As with the last several books in the series, V Is for Vengeance was a long time in the making.",
+#     "id":1,
+#     "price":19,
+#     "title":"V is for Vengeance",
+#     "updated_at":"2011-12-05T09:46:11Z" },
+# ]
+# ::output-end::
+#
+# output:: xml
+# &lt;books type="array"&gt;
+#   &lt;book&gt;
+#     &lt;id type="integer"&gt;1&lt;/id&gt;
+#     &lt;title&gt;V is for Vengeance&lt;/title&gt;
+#     &lt;description&gt;As with the last several books in the series, V Is for Vengeance was a long time in the making.&lt;/description&gt;
+#     &lt;price type="integer"&gt;19&lt;/price&gt;
+#     &lt;created-at type="datetime"&gt;2011-12-05T09:46:11Z&lt;/created-at&gt;
+#     &lt;updated-at type="datetime"&gt;2011-12-05T09:46:11Z&lt;/updated-at&gt;
+#   &lt;/book&gt;
+# &lt;/books&gt;
+#::output-end::
+#
+# Get a list of all books in the system with pagination.  Defaults to 10 per page
+# =end
+</code></pre>
+
+<h1>Haml Templates and styles</h1>
+
+<p>Resource and resource method annotations are available as instance and local variables in Haml templates.
+Here are the listing of variables available. But the best way to understand it is to look at the default 
+Haml templates generated by <code>rake rapi_doc:setup</code> in <code>config/rapi_doc</code> folder.</p>
+
+<h2>A] Resource Method</h2>
+
+<pre><code>@resource_name: Resource name
+@method_order: the numerical order of the method
+@content: All Misc info
+@url: url
+@access: public/privileged, etc
+@return: the data format of the info
+@params: params expected by this api
+@outputs: array of [output_format, output example], for example, [json, ....json output.. ]
+@request: example of the data expected
+@response: example of the response
+</code></pre>
+
+<h2>B] Resource</h2>
+
+<pre><code>@name: name
+@xml: xml representation of the resource
+@json: json representation
+@function_blocks: Array of resource method objects described above
+
+
+Following instance variables are only available in the index template described below (and not in the resource Haml template)
+@resource_methods: Array of HTML generated for each of the methods. 
+@resource_header: HTML generated for the resource
+</code></pre>
+
+<h2>C] Index</h2>
+
+<pre><code>resource_docs: all the resource objects, whose instance variables are described above.
+As mentioned before, for each resource, the HTML generated for the resource itself is available in @resource_header
+and HTML generated for each of its methods is available in @resource_methods array. 
+</code></pre>
+
+<h2>D] Documentaton Output</h2>
+
+<p>Documentation generated is located in <code>public/apidoc</code> directory.</p>
+
+<pre><code>index.html: contains the HTML 
+styles.css: CSS styles
+scripts.js: contains the script used to search within the documentation.
+</code></pre>
+
+<h1>Credit</h1>
+
+<ul>
+<li>Based on RAPI Doc by Jaap van der Meer found here: <a href="http://code.google.com/p/rapidoc/">http://code.google.com/p/rapidoc/</a>
+</li>
+<li><a href="https://github.com/sabman/rapi_doc">https://github.com/sabman/rapi_doc</a></li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/elc">elc</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
