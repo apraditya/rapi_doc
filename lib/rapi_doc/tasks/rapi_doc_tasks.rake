@@ -10,11 +10,16 @@ namespace :rapi_doc do
 
   desc "Generate the api documentation"
   task :generate do
-    resources = get_resources! do |controller, controller_url, controller_location|
-      print "Generate documentation for resource \"#{controller}\" mapped at \"#{controller_url}\" (\"#{File.basename(controller_location)}\")? (Y/n):"
-      response = STDIN.gets.chomp
-      ['y', 'Y'].include? response
+    if !ENV['confirmed']
+      resources = get_resources! do |controller, controller_url, controller_location|
+        print "Generate documentation for resource \"#{controller}\" mapped at \"#{controller_url}\" (\"#{File.basename(controller_location)}\")? (Y/n):"
+        response = STDIN.gets.chomp
+        ['y', 'Y'].include? response
+      end
+    else
+      resources = get_resources!
     end
+
     if resources.empty?
       puts "Nothing to generate"
       #puts "Please specify controllers in config/rapi_doc/config.yml for which api documentation is to be generated and then run rapi_doc::generate again"
