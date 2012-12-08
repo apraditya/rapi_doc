@@ -1,9 +1,9 @@
 .resource_methods
   %a{:id => "#{@resource_name}_method_#{@method_order}"}
-  %p
+  %h2.api-url.blue= "#{@method} #{@url}"
+  %p.description
     %strong Description:
-    = @content
-  %h2= @url
+    = @content  
   - if @access
     %strong Access:
     = @access
@@ -18,9 +18,10 @@
       - @params.each do |v|
         %li= v
   - unless @outputs.empty?
+    %strong Response:
     %ul.output_format
       - @outputs.each do |output_format, output|
-        %li{:class => output_format}
+        %li.output-format{:class => output_format}
           %a{:href => "##{"#{@resource_name}_#{output_format}_#{@method_order}"}"}= output_format
     .output
       - @outputs.each do |output_format, output|
@@ -30,9 +31,7 @@
     %br/
   - unless @request.blank?
     %strong Request:
-    %pre.code
-      %code= @request
+    %pre.prettyprint= @request
   - unless @response.blank?
     %strong Response:
-    %pre.code
-      %code= @response
+    %pre.prettyprint= @response
