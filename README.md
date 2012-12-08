@@ -19,11 +19,13 @@ These files are in `<application folder>/config/rapi_doc` folder.
 Then invoke the generation by calling:
 
 `rake rapi_doc:generate`
-
-It will analyze `rake routes` output and find the controller files in app/controllers directory that may have the annotation.
-It will confirm from the user whether he/she wants the plugin to look for annotations in each of these files.
-For files confirmed by the user, it will parse the annotations and generate the HTML output using the template files and styles
+It will analyze the `routes.rb` files and find the controller files in app/controllers directory that may have the annotation.
+Only controllers actions with annotation will be parsed and generated the HTML output using the template files and styles
 in the `config/rapi_doc` folder.
+The final result is placed in `public/apidoc/`.
+
+`rake rapi_doc:generate confirmation=true`
+This rake task is the same as `rake rapi_doc:generate` but it will acquire your confirmation to generate API doc for each controller.
 
 `rake rapi_doc:clean`
 will remove the documentation thus generated.
