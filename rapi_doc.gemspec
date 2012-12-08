@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Husein Choroomi", "Adinda Praditya", "Salil Wadnerkar"]
-  s.date = "2012-12-02"
+  s.date = "2012-12-08"
   s.description = "Rails API Doc Generator. Parses the apidoc annotations to generate HTML pages."
   s.email = "hchoroomi@gmail.com"
   s.extra_rdoc_files = [
@@ -34,14 +34,18 @@ Gem::Specification.new do |s|
     "lib/rapi_doc/rapi_config.rb",
     "lib/rapi_doc/resource_doc.rb",
     "lib/rapi_doc/tasks/rapi_doc_tasks.rake",
+    "rapi_doc.gemspec",
     "spec/doc_parser_spec.rb",
     "spec/method_doc_spec.rb",
     "spec/spec_helper.rb",
-    "templates/Search.png",
     "templates/_resource_header.html.haml",
     "templates/_resource_method.html.haml",
+    "templates/beautify.js",
     "templates/index.html.haml",
+    "templates/prettify.css",
+    "templates/prettify.js",
     "templates/scripts.js",
+    "templates/search.png",
     "templates/styles.css",
     "uninstall.rb"
   ]
