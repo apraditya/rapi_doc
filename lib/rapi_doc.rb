@@ -50,8 +50,8 @@ module RapiDoc
       controller_info = get_controller_info!
       resources = []
       controller_info.each do |controller, controller_base_routes|
-        #controller_class = controller.capitalize + 'Controller'
         controller_location = controller_dir(controller + '_controller.rb')
+        next if !File.exist?(controller_location) # In case of some external controller in gems like DeviseController
         # base urls differ only by the method [GET or POST]. So, any one will do.
         controller_url = controller_base_routes[0][2].gsub(/\(.*\)/, '') # omit the trailing format
         #controller_methods = controller_base_routes.map { |action, method, url| method }

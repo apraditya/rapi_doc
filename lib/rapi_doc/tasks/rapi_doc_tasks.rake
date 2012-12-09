@@ -3,13 +3,13 @@ include RapiDoc::RAPIDoc
 namespace :rapi_doc do
 
   desc "Generate the config files"
-  task :setup do
+  task :setup => :environment do
     create_structure!
     #puts "Now specify controllers in config/rapi_doc/config.yml for which api documentation is to be generated and then run rapi_doc::generate"
   end
 
   desc "Generate the api documentation"
-  task :generate do
+  task :generate => :environment do
     if ENV['confirmation'] # Need confirmation?
       resources = get_resources! do |controller, controller_url, controller_location|
         print "Generate documentation for resource \"#{controller}\" mapped at \"#{controller_url}\" (\"#{File.basename(controller_location)}\")? (Y/n):"
