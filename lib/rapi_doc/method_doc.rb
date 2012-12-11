@@ -1,13 +1,14 @@
 module RapiDoc
   # This class holds methods about a doc.
   class MethodDoc
-    attr_accessor :scope, :method_order, :content, :request, :response, :outputs, :params
+    attr_accessor :scope, :method_order, :content, :request_header, :request, :response, :outputs, :params
     
     def initialize(resource_name, type, order)
       @resource_name = resource_name
       @scope = type
       @method_order = order
       @content = ""
+      @request_header = ""
       @request = ""
       @response = ""
       @outputs = {}
@@ -24,6 +25,12 @@ module RapiDoc
         else
           @response << line
         end
+      when :request_header
+        if line =~ /::request_header-end::/
+          new_scope = :function
+        else
+          @request_header << line
+        end
       when :request
         if line =~ /::request-end::/
           new_scope = :function
@@ -38,11 +45,11 @@ module RapiDoc
           @outputs[last_output_key] << ERB::Util.html_escape(line)
         end
       when :class, :function
-        result = line.scan(/(\w+)\:\:\s*(.+)/)
+        result = line.scan(/(\w+)\:\:\s*(.*)/)
         if not result.empty?
           key, value = result[0]
           case key
-          when "response", "request"
+          when "response", "request", "request_header"            
             new_scope = key.to_sym
           when "output"
             new_scope = key.to_sym
