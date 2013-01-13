@@ -20,6 +20,7 @@ module RapiDoc
     end
 
     def process_line(line, current_scope)
+      line.strip!
       #puts "In scope #{current_scope} processing: #{line}"
       new_scope = current_scope
       case current_scope
@@ -52,6 +53,7 @@ module RapiDoc
         result = line.scan(/(\w+)\:\:\s*(.*)/)
         if not result.empty?
           key, value = result[0]
+          value.strip!
           case key
           when "response", "request", "request_header"            
             new_scope = key.to_sym

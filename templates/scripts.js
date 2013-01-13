@@ -38,20 +38,30 @@
  };
 
 $(document).ready(function(){
-    $('#resource_index input').keyup(function(event) {
-        if ( event.keyCode == 13 ) {
-            event.preventDefault();
-        } else {
-            var search_txt = $(this).val();
-            var search_regex = new RegExp(search_txt, 'g');
-            $("#resource_index ul li").each ( function() {
-                var elem = $(this)
-                var h_elem = elem.find('a')[0];
-                var link_txt = h_elem.text;
-                var match = link_txt.match(search_regex);
-                match ? elem.show() : elem.hide();
-            });
+    var api_endpoints = $("#resource_index ul li");
+    var search = function(query){
+      var search_regex = new RegExp(query, 'gi');
+      api_endpoints.each ( function() {
+        var elem = $(this);
+        var h_elem = elem.find('a')[0];
+        var link_txt = $.trim($(h_elem).text());
+        var match = link_txt.match(search_regex);
+        if(match){
+          // Show the parent container first
+          elem.parents("li.resource-container").show();
+          elem.show();
         }
+        else
+          elem.hide();
+      });
+    };
+
+    
+    $('#resource_index input').keyup(function(event) {
+      if ( event.keyCode == 13 ){
+        event.preventDefault();
+      }
+      search($(this).val());
     });
 
     // Pretty print code.

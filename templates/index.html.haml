@@ -19,7 +19,7 @@
         %h3 Resources
         %ul#api-navigation
           - resource_docs.each do |resource|
-            %li
+            %li.resource-container
               %span.resource-name-container
                 %a.resource-name{:href => "##{resource.name}"}= resource.name
               - if resource.function_blocks.any?
