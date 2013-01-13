@@ -1,5 +1,6 @@
 .resource_methods
   %a{:id => "#{@resource_name}_method_#{@method_order}"}
+  %h2.api-name= @name
   %h2.api-url.blue= "#{@method} #{@url}"
   %p.description
     %strong Description:

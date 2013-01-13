@@ -28,7 +28,7 @@
                     %li
                       %span.api-endpoint-container
                         %a.api-endpoint{:href => "##{resource.name}_method_#{method_block.method_order}"}
-                          = "#{method_block.method} #{method_block.url}"
+                          = method_block.name
       #resources
         - resource_docs.each do |resource|
           %a{:id => "#{resource.name}"}

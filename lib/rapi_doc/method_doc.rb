@@ -1,7 +1,8 @@
 module RapiDoc
   # This class holds methods about a doc.
   class MethodDoc
-    attr_accessor :scope, :method_order, :content, :request_header, :request, :response, :outputs, :params
+    attr_accessor :scope, :method_order, :content, :request_header, :request, :response, :outputs, :params,
+                  :name, :url, :method
     
     def initialize(resource_name, type, order)
       @resource_name = resource_name
@@ -13,6 +14,9 @@ module RapiDoc
       @response = ""
       @outputs = {}
       @params = []
+      @name = ""
+      @url = ""
+      @method = ""
     end
 
     def process_line(line, current_scope)
@@ -56,6 +60,8 @@ module RapiDoc
             @outputs[value] = '' # add the new output format as a key
           when "param"
             @params << value
+          when "url", "name", "method"
+            self.send("#{key}=", value)
           else # user wants this new shiny variable whose name is the key with value = value
             instance_variable_set("@#{key}".to_sym, value)
             define_singleton_method(key.to_sym) { value } # define accessor for the templates to read it
@@ -74,5 +80,10 @@ module RapiDoc
       binding
     end
 
+    # Return url if the @name is not set.
+    def name
+      return @url if @name.empty?
+      @name
+    end
   end
 end
