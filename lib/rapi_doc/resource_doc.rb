@@ -74,7 +74,7 @@ module RapiDoc
           when /class/ # keep track of whether a resource or an api is being annotated
             in_class = true
           else
-            if current_api_block # process ines only if they are apidoc comments
+            if current_api_block # process lines only if they are apidoc comments
               current_scope = current_api_block.process_line(line, current_scope)
             end
         end

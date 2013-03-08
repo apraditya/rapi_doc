@@ -21,9 +21,21 @@ module RapiDoc
     # Reads 'rake routes' output and gets the controller info
     def get_controller_info!
       controller_info = {}
-      routes = Dir.chdir(::Rails.root.to_s) { `rake routes` }
-      routes.split("\n").each do |entry|
-        method, url, controller_action = entry.split.slice(-3, 3)
+      
+      # Use Railties to get routes information.
+      # Manually set routes config file, because we're not actually in Rails.
+      Rails.application.routes_reloader.instance_variable_set(:@paths, [File.join(Rails.root, "config/routes.rb")])
+      Rails.application.reload_routes!
+      all_routes = Rails.application.routes.routes
+      require 'rails/application/route_inspector'
+      inspector = Rails::Application::RouteInspector.new
+      # Get Rails routes information.
+      routes = inspector.collect_routes(all_routes)
+
+      routes.each do |entry|
+        method = entry[:verb].blank? ? "GET" : entry[:verb]
+        url = entry[:path]
+        controller_action = entry[:reqs]
         controller, action = controller_action.split('#')
         puts "For \"#{controller}\", found action \"#{action}\" with #{method} at \"#{url}\""
         controller_info[controller] ||= []
@@ -37,12 +49,9 @@ module RapiDoc
       #yml.collect { |key, val| ResourceDoc.new(key, val["location"], controller_dir(val["controller_name"])) }
       controller_info = get_controller_info!
       resources = []
-      controller_info.each do |controller, action_entries|
-        #controller_class = controller.capitalize + 'Controller'
+      controller_info.each do |controller, controller_base_routes|
         controller_location = controller_dir(controller + '_controller.rb')
-        controller_base_routes = action_entries.select do |action, method, url|
-          url.index('/', 1).nil?
-        end
+        next if !File.exist?(controller_location) # In case of some external controller in gems like DeviseController
         # base urls differ only by the method [GET or POST]. So, any one will do.
         controller_url = controller_base_routes[0][2].gsub(/\(.*\)/, '') # omit the trailing format
         #controller_methods = controller_base_routes.map { |action, method, url| method }
@@ -83,11 +92,18 @@ module RapiDoc
 
     # Creates views for the resources
     def generate_resource_templates!(resource_docs)
-      class_template = IO.read(template_dir('_resource_header.html.haml'))
-      method_template = IO.read(template_dir('_resource_method.html.haml'))
-      resource_docs.each { |resource| resource.parse_apidoc!(class_template, method_template) }
+      class_template = IO.read(config_dir('_resource_header.html.haml'))
+      method_template = IO.read(config_dir('_resource_method.html.haml'))
+      final_resource_docs = []
+      resource_docs.each { |resource| 
+        output = resource.parse_apidoc!(class_template, method_template) 
+        if !output.nil? && !output.empty? # Keep only files that have API documentation.
+          final_resource_docs << resource
+        end
+      }
+
       template = IO.read(config_dir('index.html.haml'))
-      parsed = Haml::Engine.new(template).render(Object.new, :resource_docs => resource_docs)
+      parsed = Haml::Engine.new(template).render(Object.new, :resource_docs => final_resource_docs)
       File.open(temp_dir("index.html"), 'w') { |file| file.write parsed }
     end
 

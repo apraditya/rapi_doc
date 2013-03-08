@@ -3,3 +3,4 @@ rapidoc_sample/*
 .idea/*
 .project
 pkg
+.rvmrc
